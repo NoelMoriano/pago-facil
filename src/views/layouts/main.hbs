@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pago Facil</title>
+    <!---Bootstrap 4--->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!---Font Awesome--->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css"
+          integrity="sha384-i1LQnF23gykqWXg6jxC2ZbCbUMxyw5gLZY6UiUS98LYV5unm8GWmfkIS6jqJfb4E" crossorigin="anonymous">
+    <!---STYLES PERSON--->
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- Load Stripe.js on your website. -->
+    <script src="https://js.stripe.com/v3"></script>
+</head>
+<body>
+<nav class="navbar navbar-light bg-warning p-2">
+    <div class="container">
+        <a href="/" class="navbar-brand">
+            Pago Facil
+        </a>
+    </div>
+</nav>
+<div class="container p-4">
+    {{{body}}}
+
+    <!---SCRIPT DE STRIPE-->
+    <div id="error-message"></div>
+    <script>
+        var stripe = Stripe('pk_test_MAmerWwEUwS94GXFxyy6SzbI00Vkj0e50f');
+
+        var checkoutButton = document.getElementById('checkout-button-sku_FTTW5WRv34S6tg');
+        checkoutButton.addEventListener('click', function () {
+            // When the customer clicks on the button, redirect
+            // them to Checkout.
+            stripe.redirectToCheckout({
+                items: [{sku: 'sku_FTTW5WRv34S6tg', quantity: 1}],
+
+                // Do not rely on the redirect to the successUrl for fulfilling
+                // purchases, customers may not always reach the success_url after
+                // a successful payment.
+                // Instead use one of the strategies described in
+                // https://stripe.com/docs/payments/checkout/fulfillment
+                successUrl: window.location.protocol + '//localhost:3000/checkout_success',
+                cancelUrl: window.location.protocol + '//localhost:3000/checkout_failed',
+                customerEmail: 'mariano260996@gmail.com',
+                billingAddressCollection: 'auto',
+            })
+                    .then(function (result) {
+                        if (result.error) {
+                            // If `redirectToCheckout` fails due to a browser or network
+                            // error, display the localized error message to your customer.
+                            var displayError = document.getElementById('error-message');
+                            displayError.textContent = result.error.message;
+                        }
+                    });
+        });
+    </script>
+</div>
+</body>
+</html>
